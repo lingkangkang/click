@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0;
+        }
+        #canvas{
+            position: relative;
+            left: 200px;
+            background: palegoldenrod;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<video src="music.mp3"  autoplay loop></video>
+</body>
+<script>
+    var canvasWidth=800;
+    var canvasHeight=800;
+    window.onload=function () {
+        var canvas = document.getElementById('canvas');
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        var pen = canvas.getContext('2d');
+        var x = 0;
+        var y = 0;
+        var x1 = 0;
+        var y1 = 0;
+        var x2 = 0;
+        var y2 = 0;
+        var k = 3.14;
+        var j = 10 * k / 6;
+        var i = 0;//秒
+        var l = 0;//分
+        var p = 0;//时
+        var balls= Array();
+        var currentTime;
+        currentTime=new Date();
+
+        i=  (currentTime.getSeconds()+1)*6;
+        l=  (currentTime.getMinutes()+1)*6-90;
+        p=  (currentTime.getHours()%12)*30-90;
+
+
+        setInterval(function () {
+            change()
+
+//            console.log(i);
+        }, 1000);
+//        setInterval(function(){
+////            clearBall()
+//            updateBall()
+//            drawBall()
+//
+//        },50)
+        function change() {
+
+            pen.clearRect(0, 0, 800, 800);
+            //外观
+            pen.beginPath();
+            pen.lineWidth = 4;
+            pen.arc(400, 400, 300, 0, Math.PI * 2);
+            pen.stroke();
+
+            pen.beginPath();
+            pen.lineWidth = 8;
+            pen.font = "40px italic";
+            pen.textAlign = 'center';
+            pen.fillStyle = 'black';
+            pen.strokeText('12', 400, 140);
+            pen.strokeText('9', 120, 410);
+            pen.strokeText('3', 680, 410);
+            pen.strokeText('6', 400, 690);
+            pen.stroke();
+            pen.fill();
+            //秒针
+            x = 400 + 300 * Math.cos((i-90) * 3.14 / 180);
+            y = 400 + 300 * Math.sin((i-90) * 3.14 / 180);
+            pen.beginPath();
+            pen.arc(400, 400, 20, 0, Math.PI * 2);
+            pen.arc(x, y, 6, 0, Math.PI * 2);
+            pen.fill();
+
+            pen.beginPath();
+            pen.lineWidth = 3;
+            pen.moveTo(400, 400);
+            pen.lineTo(x, y);
+            pen.stroke();
+            var a1=Math.floor(Math.random()*256);
+            var a2=Math.floor(Math.random()*256);
+            var a3=Math.floor(Math.random()*256);
+            var col='rgb('+a1+','+a2+','+a3+')';
+            var ball={
+                x:x,
+                y:y,
+                vx:Math.floor(Math.random()*12)+2,
+                vy:-12,
+                g:Math.random()*4+2,
+                color:col,
+            };
+
+            balls.push(ball);
+            //分针
+            x1 = 400 + 240 * Math.cos((l-6) * 3.14 / 180);
+            y1 = 400 + 240 * Math.sin((l-6) * 3.14 / 180);
+            pen.beginPath();
+            pen.lineWidth = 5;
+            pen.moveTo(400, 400);
+            pen.lineTo(x1, y1);
+            pen.stroke();
+
+            x1 = 400 + 250 * Math.cos((l-6) * 3.14 / 180);
+            y1 = 400 + 250 * Math.sin((l-6) * 3.14 / 180);
+            pen.beginPath();
+            pen.lineWidth = 5;
+            pen.arc(x1, y1, 6, 0, Math.PI * 2);
+            pen.stroke();
+            pen.fill();
+            //时针
+            x2 = 400 + 180 * Math.cos(p * 3.14 / 180);
+            y2 = 400 + 180 * Math.sin(p * 3.14 / 180);
+            pen.beginPath();
+            pen.lineWidth = 9;
+            pen.moveTo(400, 400);
+            pen.lineTo(x2, y2);
+            pen.stroke();
+            pen.fill();
+
+            x2 = 400 + 200 * Math.cos(p * 3.14 / 180);
+            y2 = 400 + 200 * Math.sin(p * 3.14 / 180);
+            pen.beginPath();
+            pen.lineWidth = 9;
+            pen.arc(x2, y2, 8, 0, Math.PI * 2);
+            pen.stroke();
+            pen.fill();
+
+
+
+            i += 6;
+            if (i == 6) {
+                l += 6;
+            }
+            if (l == 6) {
+                p += 6;
+            }
+            i = i % 360;
+            l = l % 360;
+            p = p % 360;
+        }
+        function updateBall(){
+            for (var i=0;i<balls.length;i++){
+                balls[i].x=balls[i].x+balls[i].vx;
+                balls[i].y=balls[i].y+balls[i].vy;
+                balls[i].vy=balls[i].vy+balls[i].g;
+                if(balls[i].y>=790){
+                    balls[i].vy=-balls[i].vy*0.75;
+                    balls[i].y=794;
+                }
+
+
+            }
+
+        }
+        function drawBall(){
+            pen.clearRect(0,0,800,800)
+            clearBall();
+            for (var i=0;i<balls.length;i++){
+                pen.beginPath();
+//                pen.strokeStyle='white';
+                pen.fillStyle=balls[i].color;
+                pen.arc(balls[i].x,balls[i].y,4,0,Math.PI*2);
+                pen.stroke();
+                pen.fill();
+                pen.closePath();
+            }
+        }
+        function clearBall(){
+
+            pen.beginPath();
+            pen.lineWidth = 4;
+            pen.arc(400, 400, 300, 0, Math.PI * 2);
+            pen.stroke();
+
+            pen.beginPath();
+            pen.lineWidth = 8;
+            pen.font = "40px italic";
+            pen.textAlign = 'center';
+            pen.fillStyle = 'black';
+            pen.strokeText('12', 400, 140);
+            pen.strokeText('9', 120, 410);
+            pen.strokeText('3', 680, 410);
+            pen.strokeText('6', 400, 690);
+            pen.stroke();
+            pen.fill();
+
+            pen.beginPath();
+            pen.arc(400, 400, 20, 0, Math.PI * 2);
+            pen.arc(x, y, 6, 0, Math.PI * 2);
+            pen.fill();
+
+            pen.beginPath();
+            pen.lineWidth = 3;
+            pen.moveTo(400, 400);
+            pen.lineTo(x, y);
+            pen.stroke();
+
+            pen.beginPath();
+            pen.lineWidth = 5;
+            pen.moveTo(400, 400);
+            pen.lineTo(x1, y1);
+            pen.stroke();
+
+            x1 = 400 + 250 * Math.cos((l-6) * 3.14 / 180);
+            y1 = 400 + 250 * Math.sin((l-6) * 3.14 / 180);
+            pen.beginPath();
+            pen.lineWidth = 5;
+            pen.arc(x1, y1, 6, 0, Math.PI * 2);
+            pen.stroke();
+            pen.fill();
+
+            pen.beginPath();
+            pen.lineWidth = 9;
+            pen.moveTo(400, 400);
+            pen.lineTo(x2, y2);
+            pen.stroke();
+            pen.fill();
+
+            x2 = 400 + 200 * Math.cos(p * 3.14 / 180);
+            y2 = 400 + 200 * Math.sin(p * 3.14 / 180);
+            pen.beginPath();
+            pen.lineWidth = 9;
+            pen.arc(x2, y2, 8, 0, Math.PI * 2);
+            pen.stroke();
+            pen.fill();
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+</script>
+</html>
